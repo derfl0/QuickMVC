@@ -12,7 +12,22 @@ class QuickConfig
      */
     public static $viewpath = 'app/view/';
 
+    /**
+     * @return string Path to views
+     */
     public static function getViewPath() {
         return self::$rootpath.'/'.self::$viewpath;
+    }
+
+    /**
+     * @var Root of the controllers
+     */
+    public static $controllerpath = 'app/controller/';
+
+    /**
+     * @return string Path to controller
+     */
+    public static function getControllerPath() {
+        return self::$rootpath.'/'.self::$controllerpath;
     }
 }

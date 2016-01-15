@@ -40,7 +40,7 @@ class QuickController
         $args = explode('/', $route);
 
         // Parse requested controller (or fallback to index)
-        if ($args[0] && file_exists($args[0])) {
+        if ($args[0] && file_exists(QuickConfig::getControllerPath().'/'.$args[0].'.php')) {
             $route = array_shift($args);
         } else {
             $route = 'index';
