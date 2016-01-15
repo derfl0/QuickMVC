@@ -8,5 +8,5 @@ class IndexController extends QuickController
     public function index($what) {
         $this->something = $what ? : 'Nothing';
     }
-    
+
 }
