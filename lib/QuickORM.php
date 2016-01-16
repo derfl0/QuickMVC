@@ -49,4 +49,17 @@ class QuickORM
         }
         return static::$meta;
     }
+
+    public function setData($data)
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
+    public static function create($data)
+    {
+        $object = new static();
+        return $object->setData($data);
+    }
 }
