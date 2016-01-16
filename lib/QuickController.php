@@ -24,9 +24,8 @@ class QuickController
 
     function render()
     {
-        $this->before();
-
         try {
+            $this->before();
             call_user_func_array(array($this, $this->action), $this->args);
             // Dereference this object
             foreach (get_object_vars($this) as $var => $value) {
