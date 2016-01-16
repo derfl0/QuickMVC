@@ -60,6 +60,7 @@ class QuickORM
     public static function create($data)
     {
         $object = new static();
-        return $object->setData($data);
+        $object->setData($data);
+        return $object;
     }
 }
