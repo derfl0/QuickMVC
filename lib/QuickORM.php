@@ -4,6 +4,8 @@ class QuickORM
 {
     protected static $meta;
 
+    protected static $storage;
+
     public static function findBy($key, $value)
     {
         $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $key=?");
@@ -42,12 +44,31 @@ class QuickORM
     {
         if (!static::$meta) {
 
-            // TODO: Replace with show columns from table
-            $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " LIMIT 1");
+            // Fetch meta
+            $stmt = QuickDB::get()->prepare("SHOW COLUMNS FROM " . static::DB_TABLE);
             $stmt->execute();
-            self::setMeta($stmt);
+            while ($col = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                static::$meta[] = array('name' => $col['Field']);
+            }
         }
         return static::$meta;
+    }
+
+    public static function find($where = '1=1', $params = array()) {
+        $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
+        $stmt->execute($params);
+        static::$storage = $stmt;
+    }
+
+    public static function fetch() {
+        return static::$storage->fetchObject(get_called_class());
+    }
+
+    public static function fetchAll() {
+        while ($obj = static::fetch()) {
+            $result[] = $obj;
+        }
+        return $obj;
     }
 
     public function setData($data)
