@@ -9,6 +9,7 @@ QuickAutoloader::addPath('app/model');
 
 // Store root in global
 QuickConfig::$rootpath = __DIR__;
+QuickConfig::$rooturl = substr($_SERVER['SCRIPT_NAME'], 0, -10);
 
 // Parse requested controller
 $controller = QuickController::load($_SERVER['QUERY_STRING']);

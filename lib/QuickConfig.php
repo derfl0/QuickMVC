@@ -10,6 +10,11 @@ class QuickConfig
     public static $rootpath;
 
     /**
+     *
+     */
+    public static $rooturl;
+
+    /**
      * @var Root of the views
      */
     public static $viewpath = 'app/view/';
