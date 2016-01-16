@@ -1,4 +1,6 @@
 <?php
+// We will propably need a session
+session_start();
 
 // Prepare autoloader
 require 'lib/QuickAutoloader.php';
