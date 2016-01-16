@@ -23,7 +23,7 @@ class QuickController
     {
         try {
             $this->before();
-            call_user_func_array(array($this, $this->action), $this->args);
+            call_user_func_array(array($this, '_'.$this->action), $this->args);
             // Dereference this object
             foreach (get_object_vars($this) as $var => $value) {
                 $$var = $value;
@@ -57,7 +57,7 @@ class QuickController
         $controller = new $controllerName;
 
         // Parse requested action (or fallback to index)
-        if ($args[0] && method_exists($controller, $args[0])) {
+        if ($args[0] && method_exists($controller, '_'.$args[0])) {
             $action = array_shift($args);
         } else {
             $action = 'index';

@@ -5,11 +5,11 @@
  */
 class IndexController extends QuickController
 {
-    public function index($what) {
-        $this->something = $what ? : 'Nothing';
+    public function _index($what = "Fallback") {
+        $this->something = $what;
     }
 
-    public function redirectme() {
+    public function _redirectme() {
         self::redirect('You just got redirected');
     }
 
