@@ -15,7 +15,7 @@ class QuickController
     {
     }
 
-    function index()
+    function _index()
     {
     }
 
