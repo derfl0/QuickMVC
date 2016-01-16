@@ -2,6 +2,8 @@
 
 class QuickConfig
 {
+    const REDIRECT_MAX = 10;
+
     /**
      * @var Rootpath of the application
      */

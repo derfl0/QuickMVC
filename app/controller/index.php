@@ -9,4 +9,8 @@ class IndexController extends QuickController
         $this->something = $what ? : 'Nothing';
     }
 
+    public function redirectme() {
+        self::redirect('You just got redirected');
+    }
+
 }
