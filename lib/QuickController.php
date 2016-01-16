@@ -9,17 +9,14 @@ class QuickController
 
     function before()
     {
-
     }
 
     function after()
     {
-
     }
 
     function index()
     {
-        $this->test = "Testing";
     }
 
     function render()
