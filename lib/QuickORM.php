@@ -4,12 +4,47 @@ class QuickORM
 {
     protected static $meta;
     protected static $storage;
+    protected static $db;
 
-    public static function findBy($key, $value)
+    public static function getDB() {
+        if (!isset(self::$db)) {
+            self::$db = QuickDB::get();
+        }
+        return self::$db;
+    }
+
+    public function __construct($data = null) {
+
+        // If we got an array load that data
+        if (is_array($data)) {
+            $this->setData($data);
+        } else {
+
+            // Else load parameters
+            foreach (func_get_args() as $num => $value) {
+                $field = static::getMeta()[$num]['Field'];
+                $this->$field = $value;
+            }
+        }
+    }
+
+    public static function find($key, $value = null)
     {
-        $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $key=?");
+        // if we search pk
+        if (!isset($value)) {
+            $sql = "SELECT * FROM " . static::DB_TABLE . " WHERE ".static::getPKWhere();
+                $value = $key;
+        } else {
+            $sql = "SELECT * FROM " . static::DB_TABLE . " WHERE $key=?";
+        }
+
+        // array fallback for key
+        if (!is_array($value)) {
+            array($value);
+        }
+
+        $stmt = self::getDB()->prepare($sql);
         $stmt->execute(array($value));
-        self::setMeta(get_called_class(), $stmt);
         return $stmt->fetchObject(get_called_class());
     }
 
@@ -19,38 +54,43 @@ class QuickORM
 
         // Prepare SQL query
         $prepared = substr(str_repeat("?,", count($meta)), 0, -1);
-        $stmt = QuickDB::get()->prepare("REPLACE INTO " . static::DB_TABLE . " VALUES ($prepared)");
+        $stmt = self::getDB()->prepare("REPLACE INTO " . static::DB_TABLE . " VALUES ($prepared)");
         // Prepare values
         foreach ($meta as $m) {
-            $params[] = $this->$m['name'];
+            $params[] = $this->$m['Field'];
         }
         // Execute
         $stmt->execute($params);
     }
 
-    private static function setMeta($class, $stmt)
+    private static function getMeta()
     {
-        if (!static::$meta[$class]) {
-            while ($meta = $stmt->getColumnMeta($i++)) {
-                static::$meta[$class][] = $meta;
-            }
-        }
-    }
-
-    private static function getMeta($class)
-    {
-        if (!static::$meta[$class]) {
+        if (!static::$meta[static::class]) {
             // Fetch meta
-            $stmt = QuickDB::get()->prepare("SHOW COLUMNS FROM " . static::DB_TABLE);
+            $stmt = self::getDB()->prepare("SHOW COLUMNS FROM " . static::DB_TABLE);
             $stmt->execute();
-            while ($col = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                static::$meta[$class][] = array('name' => $col['Field']);
-            }
+            static::$meta[static::class] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        return static::$meta[$class];
+        return static::$meta[static::class];
     }
 
-    public static function find($where = '1=1', $params = array())
+    private static function getPrimaryKey() {
+        foreach (static::getMeta() as $col) {
+            if ($col['Key'] == 'PRI') {
+                $result[] = $col['Field'];
+            }
+        }
+        return $result;
+    }
+
+    private static function getPKWhere() {
+        foreach (static::getPrimaryKey() as $pk) {
+            $sql[] = " $pk = ? ";
+        }
+        return join(' AND ', $sql);
+    }
+
+    public static function findAll($where = '1=1', $params = array())
     {
         if (!is_array($params)) {
             $params = array($params);
@@ -58,13 +98,13 @@ class QuickORM
 
         $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
-        static::$storage = $stmt;
+        static::$storage[static::class] = $stmt;
         return $stmt;
     }
 
     public static function fetch()
     {
-        return static::$storage->fetchObject(get_called_class());
+        return static::$storage[static::class]->fetchObject(get_called_class());
     }
 
     public static function fetchAll()
@@ -89,12 +129,20 @@ class QuickORM
         return $object;
     }
 
-    public static function deleteBy($where = '1=1', $params = array())
+    public function delete() {
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE ".static::getPKWhere());
+        foreach (static::getPrimaryKey() as $key) {
+            $params[] = $this->$key;
+        }
+        $stmt->execute($params);
+    }
+
+    public static function deleteAll($where = '1=1', $params = array())
     {
         if (!is_array($params)) {
             $params = array($params);
         }
-        $stmt = QuickDB::get()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
     }
 }
