@@ -14,8 +14,6 @@ if (DEV) {
 // We will propably need a session
 session_start();
 
-// Set error reporting
-
 // Prepare autoloader
 require 'lib/QuickAutoloader.php';
 QuickAutoloader::addPath('lib');
