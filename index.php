@@ -1,6 +1,20 @@
 <?php
+// Set mode to development
+define('DEV', true);
+
+// Set error mode
+if (DEV) {
+    error_reporting(E_ALL & ~E_NOTICE);
+    ini_set("display_errors", 1);
+    set_error_handler("var_dump");
+} else {
+    error_reporting(0);
+}
+
 // We will propably need a session
 session_start();
+
+// Set error reporting
 
 // Prepare autoloader
 require 'lib/QuickAutoloader.php';

@@ -15,6 +15,9 @@ class QuickDB extends PDO
                 . ';charset=utf8',
                 QuickConfig::DB_NAME,
                 QuickConfig::DB_PASSWORD);
+            if (DEV) {
+                self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            }
         }
         return self::$instance;
     }
