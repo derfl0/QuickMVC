@@ -3,7 +3,9 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 
 	RewriteEngine On
-	RewriteBase /QuickMVC
+
+	# Rewrite base which shouldnt be required
+	#RewriteBase /QuickMVC
 
 	# Force to exclude the trailing slash
 	RewriteCond %{REQUEST_FILENAME} !-d
