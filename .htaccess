@@ -8,9 +8,9 @@ Options -Indexes
 	#RewriteBase /QuickMVC
 
 	# Force to exclude the trailing slash
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_URI} (.*)/$
-	RewriteRule ^(.+)/$ $1 [R=307,L]
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_URI} (.*)/$
+	#RewriteRule ^(.+)/$ $1 [R=307,L]
 
 	# Restrict php files direct access
 	RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
