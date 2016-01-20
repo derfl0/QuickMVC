@@ -26,4 +26,6 @@ QuickConfig::$rooturl = substr($_SERVER['SCRIPT_NAME'], 0, -10);
 $controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'])));
 
 // Load the template
+ob_start();
 QuickTemplate::render();
+ob_end_flush();

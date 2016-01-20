@@ -28,7 +28,6 @@ class QuickController
             foreach (get_object_vars($this) as $var => $value) {
                 $$var = $value;
             }
-            //ob_start();
             include QuickConfig::getViewPath() . $this->view['name'] . '.php';
             $this->after();
 
@@ -76,7 +75,12 @@ class QuickController
         return $controller;
     }
 
-    public static function redirect($path = '')
+    public static function redirect($path = '') {
+        ob_end_clean();
+        header( 'Location: '.QuickURL::generate($path) );
+    }
+
+    public static function redirectPost($path = '')
     {
 
         // To many redirects check
