@@ -6,7 +6,6 @@ define('DEV', true);
 if (DEV) {
     error_reporting(E_ALL & ~E_NOTICE);
     ini_set("display_errors", 1);
-    set_error_handler("var_dump");
 } else {
     error_reporting(0);
 }
