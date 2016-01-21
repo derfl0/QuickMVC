@@ -112,7 +112,7 @@ class QuickORM
         while ($obj = static::fetch()) {
             $result[] = $obj;
         }
-        return $obj;
+        return $result;
     }
 
     public function setData($data)
