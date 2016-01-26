@@ -6,21 +6,23 @@ class QuickORM
     protected static $storage;
     protected static $db;
 
-    public static function getDB() {
+    public static function getDB()
+    {
         if (!isset(self::$db)) {
             self::$db = QuickDB::get();
         }
         return self::$db;
     }
 
-    public function __construct($data = null) {
+    public function __construct($data = null)
+    {
 
         // If we got an array load that data
         if (is_array($data)) {
             $this->setData($data);
         } else {
 
-            // Else load parameters
+            // Else load parameters (since func_get_args() will return empty array if $data is null we dont need to check)
             foreach (func_get_args() as $num => $value) {
                 $field = static::getMeta()[$num]['Field'];
                 $this->$field = $value;
@@ -32,10 +34,10 @@ class QuickORM
     {
         // if we search pk
         if (!isset($value)) {
-            $sql = "SELECT * FROM " . static::DB_TABLE . " WHERE ".static::getPKWhere();
-                $value = $key;
+            $sql = "SELECT * FROM " . static::DB_TABLE . " WHERE " . static::getPKWhere() . " LIMIT 1";
+            $value = $key;
         } else {
-            $sql = "SELECT * FROM " . static::DB_TABLE . " WHERE $key=?";
+            $sql = "SELECT * FROM " . static::DB_TABLE . " WHERE $key=? LIMIT 1";
         }
 
         // array fallback for key
@@ -74,7 +76,8 @@ class QuickORM
         return static::$meta[static::class];
     }
 
-    private static function getPrimaryKey() {
+    private static function getPrimaryKey()
+    {
         foreach (static::getMeta() as $col) {
             if ($col['Key'] == 'PRI') {
                 $result[] = $col['Field'];
@@ -83,7 +86,8 @@ class QuickORM
         return $result;
     }
 
-    private static function getPKWhere() {
+    private static function getPKWhere()
+    {
         foreach (static::getPrimaryKey() as $pk) {
             $sql[] = " $pk = ? ";
         }
@@ -98,21 +102,24 @@ class QuickORM
 
         $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
         static::$storage[static::class] = $stmt;
         return $stmt;
     }
 
+    public static function getStorage()
+    {
+        return static::$storage[static::class];
+    }
+
     public static function fetch()
     {
-        return static::$storage[static::class]->fetchObject(get_called_class());
+        return static::getStorage()->fetchObject(get_called_class());
     }
 
     public static function fetchAll()
     {
-        while ($obj = static::fetch()) {
-            $result[] = $obj;
-        }
-        return $result;
+        return static::getStorage()->fetchAll();
     }
 
     public function setData($data)
@@ -129,8 +136,9 @@ class QuickORM
         return $object;
     }
 
-    public function delete() {
-        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE ".static::getPKWhere());
+    public function delete()
+    {
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE " . static::getPKWhere());
         foreach (static::getPrimaryKey() as $key) {
             $params[] = $this->$key;
         }
