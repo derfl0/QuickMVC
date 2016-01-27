@@ -30,6 +30,13 @@ class QuickORM
         }
     }
 
+    public function __get($val) {
+        if (!isset($this->$val) && method_exists(get_called_class(), 'get'.ucfirst($val))) {
+            $this->$val = call_user_func(array($this, 'get'.ucfirst($val)));
+        }
+        return $this->$val;
+    }
+
     public static function find($key, $value = null)
     {
         // if we search pk
