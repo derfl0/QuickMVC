@@ -160,4 +160,8 @@ class QuickORM
         $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
     }
+
+    public static function truncate() {
+        return self::getDB()->query("TRUNCATE TABLE " . static::DB_TABLE);
+    }
 }
