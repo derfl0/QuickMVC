@@ -6,6 +6,7 @@ class QuickORM
     protected static $storage;
     protected static $db;
 
+    // Use singleton db
     public static function getDB()
     {
         if (!isset(self::$db)) {
@@ -17,22 +18,25 @@ class QuickORM
     public function __construct($data = null)
     {
 
-        // If we got an array load that data
-        if (is_array($data)) {
-            $this->setData($data);
-        } else {
-
-            // Else load parameters (since func_get_args() will return empty array if $data is null we dont need to check)
-            foreach (func_get_args() as $num => $value) {
-                $field = static::getMeta()[$num]['Field'];
-                $this->$field = $value;
-            }
+        // If we got data then set it
+        if ($data) {
+            $this->setData(is_array($data) ? $data : func_get_args());
         }
     }
 
-    public function __get($val) {
-        if (!isset($this->$val) && method_exists(get_called_class(), 'get'.ucfirst($val))) {
-            $this->$val = call_user_func(array($this, 'get'.ucfirst($val)));
+    /**
+     * Magic method to implement auto value storage
+     *
+     * HowTo: If you want an object to store an array of users from the database define a method getUser and let it
+     * return the result. Call it magically by $object->user to prevent loading it everytime from the db
+     *
+     * @param $val
+     * @return mixed
+     */
+    public function __get($val)
+    {
+        if (!isset($this->$val) && method_exists(get_called_class(), 'get' . ucfirst($val))) {
+            $this->$val = call_user_func(array($this, 'get' . ucfirst($val)));
         }
         return $this->$val;
     }
@@ -129,17 +133,28 @@ class QuickORM
         return static::getStorage()->fetchAll();
     }
 
-    public function setData($data)
+    public function setData($data = array())
     {
         foreach ($data as $key => $value) {
-            $this->$key = $value;
+            $this->setAttributes($key, $value);
         }
+    }
+
+    public function setAttributes($attr, $value)
+    {
+        // Mapping in case we want to address out attribut numeric
+        if (is_numeric($attr)) {
+            $attr = static::getMeta()[$attr]['Field'];
+        }
+        $this->$attr = $value;
+
     }
 
     public static function create($data)
     {
         $object = new static();
-        $object->setData($data);
+        $object->setData(is_array($data) ? $data : func_get_args());
+        $object->store();
         return $object;
     }
 
@@ -159,9 +174,5 @@ class QuickORM
         }
         $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
-    }
-
-    public static function truncate() {
-        return self::getDB()->query("TRUNCATE TABLE " . static::DB_TABLE);
     }
 }
