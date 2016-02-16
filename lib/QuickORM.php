@@ -7,7 +7,7 @@ class QuickORM
     protected static $db;
 
     // Use singleton db
-    public static function getDB()
+    protected static function getDB()
     {
         if (!isset(self::$db)) {
             self::$db = QuickDB::get();
@@ -19,7 +19,7 @@ class QuickORM
     {
 
         // If we got data then set it
-        if ($data) {
+        if (func_num_args()) {
             $this->setData(is_array($data) ? $data : func_get_args());
         }
     }
@@ -74,6 +74,12 @@ class QuickORM
         }
         // Execute
         $stmt->execute($params);
+
+        // Check for auto increment
+        if ($col = static::getAutoIncrement()) {
+            $this->$col = self::getDB()->lastInsertId();
+        }
+
     }
 
     private static function getMeta()
@@ -95,6 +101,17 @@ class QuickORM
             }
         }
         return $result;
+    }
+
+    /**
+     * @return String Name of the auto increment column
+     */
+    private static function getAutoIncrement() {
+        foreach (static::getMeta() as $col) {
+            if ($col['Extra'] == 'auto_increment') {
+                return $col['Field'];
+            }
+        }
     }
 
     private static function getPKWhere()
