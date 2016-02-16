@@ -6,6 +6,7 @@ define('DEV', true);
 if (DEV) {
     error_reporting(E_ALL & ~E_NOTICE);
     ini_set("display_errors", 1);
+
 } else {
     error_reporting(0);
 }
@@ -22,6 +23,11 @@ QuickAutoloader::addPath('app/model');
 QuickConfig::$rootpath = __DIR__;
 QuickConfig::$rooturl = substr($_SERVER['SCRIPT_NAME'], 0, -10);
 
+// Restore DB Dump if in development mode
+if (DEV) {
+    QuickDB::restoreDump();
+}
+
 // Parse requested controller and ignore params
 $controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'])));
 
@@ -29,3 +35,8 @@ $controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'
 ob_start();
 QuickTemplate::render();
 ob_end_flush();
+
+// If we are in developmode dump our complete db
+if (DEV) {
+    QuickDB::storeDump();
+}
