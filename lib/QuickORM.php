@@ -82,10 +82,15 @@ class QuickORM
 
     }
 
-    private static function getMeta()
+    protected static function getMeta()
     {
+        // If we're productive and meta wasn't loaded connect to session meta
+        if (!static::$meta && !DEV) {
+            static::$meta = &$_SESSION['db_meta'];
+        }
+
+        // If meta for this table was not already loaded, load it now
         if (!static::$meta[static::class]) {
-            // Fetch meta
             $stmt = self::getDB()->prepare("SHOW COLUMNS FROM " . static::DB_TABLE);
             $stmt->execute();
             static::$meta[static::class] = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -93,7 +98,7 @@ class QuickORM
         return static::$meta[static::class];
     }
 
-    private static function getPrimaryKey()
+    protected static function getPrimaryKey()
     {
         foreach (static::getMeta() as $col) {
             if ($col['Key'] == 'PRI') {
@@ -106,7 +111,7 @@ class QuickORM
     /**
      * @return String Name of the auto increment column
      */
-    private static function getAutoIncrement() {
+    protected static function getAutoIncrement() {
         foreach (static::getMeta() as $col) {
             if ($col['Extra'] == 'auto_increment') {
                 return $col['Field'];
@@ -114,7 +119,7 @@ class QuickORM
         }
     }
 
-    private static function getPKWhere()
+    protected static function getPKWhere()
     {
         foreach (static::getPrimaryKey() as $pk) {
             $sql[] = " $pk = ? ";
