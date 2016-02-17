@@ -1,12 +1,30 @@
 <?php
 
+/**
+ * Class QuickORM
+ *
+ * Parent class for Quick Object Relationship Mapping
+ *
+ * Example:
+ *
+ * class User extends QuickORM {
+ *  const DB_TABLE = 'users';
+ * }
+ *
+ * Is enough to get all the features of the ORM
+ */
 class QuickORM
 {
     protected static $meta;
     protected static $storage;
     protected static $db;
 
-    // Use singleton db
+    /**
+     * This singleton is here in the purpose to be able to use QuickORM without the rest of the framework. Just give
+     * it some other DB in here.
+     *
+     * @return PDO Will return the required database for operations
+     */
     protected static function getDB()
     {
         if (!isset(self::$db)) {
@@ -61,6 +79,19 @@ class QuickORM
         return $stmt->fetchObject(get_called_class());
     }
 
+    public static function findAll($where = '1=1', $params = array())
+    {
+        if (!is_array($params)) {
+            $params = array($params);
+        }
+
+        $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
+        $stmt->execute($params);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+        static::$storage[static::class] = $stmt;
+        return $stmt;
+    }
+
     public function store()
     {
         $meta = static::getMeta(get_called_class());
@@ -81,6 +112,68 @@ class QuickORM
         }
 
     }
+
+
+    public function setData($data = array())
+    {
+        foreach ($data as $key => $value) {
+            $this->setAttributes($key, $value);
+        }
+    }
+
+    public function setAttributes($attr, $value)
+    {
+        // Mapping in case we want to address out attribut numeric
+        if (is_numeric($attr)) {
+            $attr = static::getMeta()[$attr]['Field'];
+        }
+        $this->$attr = $value;
+    }
+
+    public static function create($data)
+    {
+        $object = new static();
+        $object->setData(is_array($data) ? $data : func_get_args());
+        $object->store();
+        return $object;
+    }
+
+    public function delete()
+    {
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE " . static::getPKWhere());
+        foreach (static::getPrimaryKey() as $key) {
+            $params[] = $this->$key;
+        }
+        $stmt->execute($params);
+    }
+
+    public static function deleteAll($where = '1=1', $params = array())
+    {
+        if (!is_array($params)) {
+            $params = array($params);
+        }
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
+        $stmt->execute($params);
+    }
+
+    ############# UTILITY PART #############
+
+    public static function getStorage()
+    {
+        return static::$storage[static::class];
+    }
+
+    public static function fetch()
+    {
+        return static::getStorage()->fetchObject(get_called_class());
+    }
+
+    public static function fetchAll()
+    {
+        return static::getStorage()->fetchAll();
+    }
+
+    ############# META PART #############
 
     protected static function getMeta()
     {
@@ -125,76 +218,5 @@ class QuickORM
             $sql[] = " $pk = ? ";
         }
         return join(' AND ', $sql);
-    }
-
-    public static function findAll($where = '1=1', $params = array())
-    {
-        if (!is_array($params)) {
-            $params = array($params);
-        }
-
-        $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
-        $stmt->execute($params);
-        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
-        static::$storage[static::class] = $stmt;
-        return $stmt;
-    }
-
-    public static function getStorage()
-    {
-        return static::$storage[static::class];
-    }
-
-    public static function fetch()
-    {
-        return static::getStorage()->fetchObject(get_called_class());
-    }
-
-    public static function fetchAll()
-    {
-        return static::getStorage()->fetchAll();
-    }
-
-    public function setData($data = array())
-    {
-        foreach ($data as $key => $value) {
-            $this->setAttributes($key, $value);
-        }
-    }
-
-    public function setAttributes($attr, $value)
-    {
-        // Mapping in case we want to address out attribut numeric
-        if (is_numeric($attr)) {
-            $attr = static::getMeta()[$attr]['Field'];
-        }
-        $this->$attr = $value;
-
-    }
-
-    public static function create($data)
-    {
-        $object = new static();
-        $object->setData(is_array($data) ? $data : func_get_args());
-        $object->store();
-        return $object;
-    }
-
-    public function delete()
-    {
-        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE " . static::getPKWhere());
-        foreach (static::getPrimaryKey() as $key) {
-            $params[] = $this->$key;
-        }
-        $stmt->execute($params);
-    }
-
-    public static function deleteAll($where = '1=1', $params = array())
-    {
-        if (!is_array($params)) {
-            $params = array($params);
-        }
-        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
-        $stmt->execute($params);
     }
 }
