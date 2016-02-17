@@ -22,12 +22,10 @@ QuickAutoloader::addPath('app/model');
 // Define constants
 define('URL', substr($_SERVER['SCRIPT_NAME'], 0, -10));
 define('PATH', __DIR__);
-
-// Store root in global
-QuickConfig::$rootpath = PATH;
-QuickConfig::$rooturl = URL;
-
-
+define('APP', PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR);
+define('VIEWS', APP . 'views' . DIRECTORY_SEPARATOR);
+define('CONTROLLERS', APP . 'controllers' . DIRECTORY_SEPARATOR);
+define('MODELS', APP . 'models' . DIRECTORY_SEPARATOR);
 
 // Restore DB Dump if in development mode
 if (DEV) {
@@ -37,10 +35,8 @@ if (DEV) {
 // Parse requested controller and ignore params
 $controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'])));
 
-// Load the template
-ob_start();
-QuickTemplate::render();
-ob_end_flush();
+// And here goes the output magic ;)
+echo $controller;
 
 // If we are in developmode dump our complete db
 if (DEV) {

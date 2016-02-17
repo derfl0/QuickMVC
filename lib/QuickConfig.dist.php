@@ -2,39 +2,10 @@
 
 class QuickConfig
 {
+    const DB_HOST = 'localhost';
+    const DB_NAME = 'sanube';
+    const DB_USER = 'sanube';
+    const DB_PASSWORD = 'sanube1';
+
     const REDIRECT_MAX = 10;
-
-    /**
-     * @var Rootpath of the application
-     */
-    public static $rootpath;
-
-    /**
-     *
-     */
-    public static $rooturl;
-
-    /**
-     * @var Root of the views
-     */
-    public static $viewpath = 'app/view/';
-
-    /**
-     * @return string Path to views
-     */
-    public static function getViewPath() {
-        return self::$rootpath.'/'.self::$viewpath;
-    }
-
-    /**
-     * @var Root of the controllers
-     */
-    public static $controllerpath = 'app/controller/';
-
-    /**
-     * @return string Path to controller
-     */
-    public static function getControllerPath() {
-        return self::$rootpath.'/'.self::$controllerpath;
-    }
 }

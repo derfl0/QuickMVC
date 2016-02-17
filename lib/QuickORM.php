@@ -86,7 +86,7 @@ class QuickORM
 
     /**
      * Will create a new entity (also in database)
-     * 
+     *
      * QuickORM::create('first', null, 2);
      * QuickORM::create(array('first', null, 2));
      * QuickORM::create(array(1 => 'first', 2 => null, 3 => 2));

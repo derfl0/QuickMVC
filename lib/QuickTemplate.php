@@ -2,36 +2,50 @@
 
 class QuickTemplate
 {
-    private static $template = 'default';
-    private static $scripts = array();
-    private static $style = array();
+    private $template;
+    private $scripts = array();
+    private $styles = array();
 
-    public static function setTemplate($template) {
+    public function __construct($template = 'default') {
+        $this->template = $template;
+    }
+
+    public static function setTemplate($template)
+    {
         self::$template = $template;
     }
-    public static function render() {
-        global $controller;
-        include QuickConfig::$rootpath.'/templates/'.self::$template.'.php';
+
+    public function render($body)
+    {
+        ob_start();
+        include PATH . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $this->template . '.php';
+        $render = ob_get_contents();
+        ob_end_clean();
+        return $render;
     }
 
-    public static function addScript($script) {
-        self::$scripts[] = $script;
+    public function addScript($script)
+    {
+        $this->scripts[] = $script;
     }
 
-    public static function addStyle($style) {
-        self::$style[] = $style;
+    public function addStyle($style)
+    {
+        $this->styles[] = $style;
     }
 
-    public static function getHead() {
+    public function getHead()
+    {
+        $head = '';
 
         // Add all stylesheets
-        foreach (self::$styles as $style) {
-            $head .= '<link rel="stylesheet" href="'.$style.'">';
+        foreach ($this->styles as $style) {
+            $head .= '<link rel="stylesheet" href="' . $style . '">';
         }
 
         // Add all scripts
-        foreach (self::$scripts as $script) {
-            $head .= ' <script src="'.$script.'"></script> ';
+        foreach ($this->scripts as $script) {
+            $head .= ' <script src="' . $script . '"></script> ';
         }
 
         return $head;

@@ -2,15 +2,18 @@
 
 class QuickURL
 {
-    function __construct($link) {
+    function __construct($link)
+    {
         $this->link = $link;
     }
 
-    public static function generate($link) {
-        return QuickConfig::$rooturl.'/'.$link;
+    public static function generate($link)
+    {
+        return URL . '/' . $link;
     }
 
-    function __toString() {
+    function __toString()
+    {
         return self::generate($this->link);
     }
 }
