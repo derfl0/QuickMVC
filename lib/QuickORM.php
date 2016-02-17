@@ -11,12 +11,23 @@
  *  const DB_TABLE = 'users';
  * }
  *
- * Is enough to get all the features of the ORM
+ * Enough to get all the features of the ORM
  */
 class QuickORM
 {
+    /**
+     * @var Meta information of tables
+     */
     protected static $meta;
+
+    /**
+     * @var Storage for the last findAll Query
+     */
     protected static $storage;
+
+    /**
+     * @var Singleton database instance
+     */
     protected static $db;
 
     /**
@@ -33,6 +44,18 @@ class QuickORM
         return self::$db;
     }
 
+    /**
+     * Constructor of ORM. Will pass data to set data
+     *
+     * Data can be passed like
+     *
+     * new QuickORM('first', null, 2);
+     * new QuickORM(array('first', null, 2));
+     * new QuickORM(array(1 => 'first', 2 => null, 3 => 2));
+     * new QuickORM(array('firstDBCol' => 'first', 'secondDBCol' => null, 'thirdDBCol' => 2));
+     *
+     * @param mixed $data Entity data
+     */
     public function __construct($data = null)
     {
 
@@ -59,6 +82,37 @@ class QuickORM
         return $this->$val;
     }
 
+    ############# CRUD ###################
+
+    /**
+     * Will create a new entity (also in database)
+     * 
+     * QuickORM::create('first', null, 2);
+     * QuickORM::create(array('first', null, 2));
+     * QuickORM::create(array(1 => 'first', 2 => null, 3 => 2));
+     * QuickORM::create(array('firstDBCol' => 'first', 'secondDBCol' => null, 'thirdDBCol' => 2));
+     *
+     * @param $data Data for new entity
+     *
+     * @return static The created entity
+     */
+    public static function create($data)
+    {
+        $object = new static();
+        $object->setData(is_array($data) ? $data : func_get_args());
+        $object->store();
+        return $object;
+    }
+
+    /**
+     * Find a single entity in the database
+     *
+     * QuickORM::find(5); Will select the entity with the primary key 5
+     *
+     * QuickORM::find('id', 6); Will find the entity where the column id has the value 6
+     *
+     * @return static The entity
+     */
     public static function find($key, $value = null)
     {
         // if we search pk
@@ -79,6 +133,19 @@ class QuickORM
         return $stmt->fetchObject(get_called_class());
     }
 
+    /**
+     * Find all entities that match some conditions
+     *
+     * QuickORM::findAll('id > 5'); Will find all entities where the id is bigger than 5
+     * QuickORM::findAll('id > ?', array(5)); Same as above but with prepared query
+     *
+     * QuickORM::findAll('id > ? AND date < ?', array(5, time())); Will find all entities where the id is bigger than 5
+     * and the date is below the current servertime
+     *
+     * @param string $where SQL Like where string
+     * @param array $params Params to use with Prepared Statment
+     * @return PDOStatement PDO result set ready to retrieve objects
+     */
     public static function findAll($where = '1=1', $params = array())
     {
         if (!is_array($params)) {
@@ -92,6 +159,9 @@ class QuickORM
         return $stmt;
     }
 
+    /**
+     * Stores the entity to the database. Will also set the autoincrement if there is one
+     */
     public function store()
     {
         $meta = static::getMeta(get_called_class());
@@ -110,10 +180,51 @@ class QuickORM
         if ($col = static::getAutoIncrement()) {
             $this->$col = self::getDB()->lastInsertId();
         }
-
     }
 
+    /**
+     * Deletes this entity
+     */
+    public function delete()
+    {
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE " . static::getPKWhere());
+        foreach (static::getPrimaryKey() as $key) {
+            $params[] = $this->$key;
+        }
+        $stmt->execute($params);
+    }
 
+    /**
+     * Deletes all entities, that match the where condition
+     *
+     * QuickORM::deleteAll('id > 5'); Will delete all entities where the id is bigger than 5
+     * QuickORM::deleteAll('id > ?', array(5)); Same as above but with prepared query
+     *
+     * QuickORM::deleteAll('id > ? AND date < ?', array(5, time())); Will delete all entities where the id is bigger
+     * than 5 and the date is below the current servertime
+     *
+     * @param string $where SQL Like where string
+     * @param array $params Params to use with Prepared Statment
+     * @return int Number of deleted objects
+     */
+    public static function deleteAll($where = '1=1', $params = array())
+    {
+        if (!is_array($params)) {
+            $params = array($params);
+        }
+        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
+        return $stmt->execute($params);
+    }
+
+    ############# DATA SETTER PART ##########
+
+    /**
+     * Sets data of the entity
+     *
+     *
+     *
+     * @param array $data New data
+     */
     public function setData($data = array())
     {
         foreach ($data as $key => $value) {
@@ -128,32 +239,6 @@ class QuickORM
             $attr = static::getMeta()[$attr]['Field'];
         }
         $this->$attr = $value;
-    }
-
-    public static function create($data)
-    {
-        $object = new static();
-        $object->setData(is_array($data) ? $data : func_get_args());
-        $object->store();
-        return $object;
-    }
-
-    public function delete()
-    {
-        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE " . static::getPKWhere());
-        foreach (static::getPrimaryKey() as $key) {
-            $params[] = $this->$key;
-        }
-        $stmt->execute($params);
-    }
-
-    public static function deleteAll($where = '1=1', $params = array())
-    {
-        if (!is_array($params)) {
-            $params = array($params);
-        }
-        $stmt = self::getDB()->prepare("DELETE FROM " . static::DB_TABLE . " WHERE $where");
-        $stmt->execute($params);
     }
 
     ############# UTILITY PART #############
@@ -204,7 +289,8 @@ class QuickORM
     /**
      * @return String Name of the auto increment column
      */
-    protected static function getAutoIncrement() {
+    protected static function getAutoIncrement()
+    {
         foreach (static::getMeta() as $col) {
             if ($col['Extra'] == 'auto_increment') {
                 return $col['Field'];
