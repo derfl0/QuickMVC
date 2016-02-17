@@ -19,9 +19,15 @@ require 'lib/QuickAutoloader.php';
 QuickAutoloader::addPath('lib');
 QuickAutoloader::addPath('app/model');
 
+// Define constants
+define('URL', substr($_SERVER['SCRIPT_NAME'], 0, -10));
+define('PATH', __DIR__);
+
 // Store root in global
-QuickConfig::$rootpath = __DIR__;
-QuickConfig::$rooturl = substr($_SERVER['SCRIPT_NAME'], 0, -10);
+QuickConfig::$rootpath = PATH;
+QuickConfig::$rooturl = URL;
+
+
 
 // Restore DB Dump if in development mode
 if (DEV) {
