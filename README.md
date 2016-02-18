@@ -78,7 +78,7 @@ $user2 = User::create(null, 'Lois' 'topsecret'); // $user2 will be our new creat
 ```php
 <?php
 $user = User::find(2) // Will find the user with the primary key 2 (in our case: Lois)
-$user = User::find('username', 'Peter) // Will find the user with the username Peter (in our case: Peter)
+$user = User::find('username', 'Peter); // Will find the user with the username Peter (in our case: Peter)
 
 // Now find multiple ones
 $users = User::findAll(); // Will find all users from the database
