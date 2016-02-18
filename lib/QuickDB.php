@@ -13,7 +13,7 @@ class QuickDB extends PDO
             self::$instance = new self('mysql:host=' . QuickConfig::DB_HOST
                 . ';dbname=' . QuickConfig::DB_NAME
                 . ';charset=utf8',
-                QuickConfig::DB_NAME,
+                QuickConfig::DB_USER,
                 QuickConfig::DB_PASSWORD);
             if (DEV) {
                 self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
