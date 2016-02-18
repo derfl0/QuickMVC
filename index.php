@@ -36,7 +36,7 @@ if (DEV) {
 $controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'])));
 
 // And here goes the output magic ;)
-echo $controller;
+echo $controller->render();
 
 // If we are in developmode dump our complete db
 if (DEV) {
