@@ -17,7 +17,7 @@ session_start();
 // Prepare autoloader
 require 'lib/QuickAutoloader.php';
 QuickAutoloader::addPath('lib');
-QuickAutoloader::addPath('app/model');
+QuickAutoloader::addPath('app/models');
 
 // Define constants
 define('URL', substr($_SERVER['SCRIPT_NAME'], 0, -10));
