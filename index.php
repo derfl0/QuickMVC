@@ -1,9 +1,8 @@
 <?php
-// Set mode to development
-define('DEV', true);
+require "lib/QuickConfig.php";
 
 // Set error mode
-if (DEV) {
+if (QuickConfig::DEVELOPMENT_MODE) {
     error_reporting(E_ALL & ~E_NOTICE);
     ini_set("display_errors", 1);
 
@@ -28,7 +27,7 @@ define('CONTROLLERS', APP . 'controllers' . DIRECTORY_SEPARATOR);
 define('MODELS', APP . 'models' . DIRECTORY_SEPARATOR);
 
 // Restore DB Dump if in development mode
-if (DEV) {
+if (QuickConfig::DEVELOPMENT_MODE) {
     QuickDB::restoreDump();
 }
 
@@ -39,6 +38,6 @@ $controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'
 echo $controller->render();
 
 // If we are in developmode dump our complete db
-if (DEV) {
+if (QuickConfig::DEVELOPMENT_MODE) {
     QuickDB::storeDump();
 }

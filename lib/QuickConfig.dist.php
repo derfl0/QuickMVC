@@ -2,6 +2,9 @@
 
 class QuickConfig
 {
+    // Set mode to development
+    const DEVELOPMENT_MODE = true;
+    
     const DB_HOST = 'localhost';
     const DB_NAME = 'sanube';
     const DB_USER = 'sanube';
