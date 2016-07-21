@@ -1,6 +1,8 @@
 <?php
 
-class QuickNavigation
+namespace QuickMVC;
+
+class Navigation
 {
     private static $navigation;
     private static $active = false;

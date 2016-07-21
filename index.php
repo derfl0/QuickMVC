@@ -1,11 +1,18 @@
 <?php
-require "lib/QuickConfig.php";
+/**
+ * ###INSTALL###
+ *
+ * Rename QuickConfig.dist.php to QuickConfig!
+ */
+require "config/QuickConfig.php";
+
+// Load autoloader
+require 'lib'.DIRECTORY_SEPARATOR.'quickmvc'.DIRECTORY_SEPARATOR.'Autoloader.php';
 
 // Set error mode
-if (QuickConfig::DEVELOPMENT_MODE) {
+if (\QuickMVC\Config::DEVELOPMENT_MODE) {
     error_reporting(E_ALL & ~E_NOTICE);
     ini_set("display_errors", 1);
-
 } else {
     error_reporting(0);
 }
@@ -14,9 +21,8 @@ if (QuickConfig::DEVELOPMENT_MODE) {
 session_start();
 
 // Prepare autoloader
-require 'lib/QuickAutoloader.php';
-QuickAutoloader::addPath('lib');
-QuickAutoloader::addPath('app/models');
+\QuickMVC\Autoloader::addPath('lib');
+\QuickMVC\Autoloader::addPath('app/models');
 
 // Define constants
 define('URL', substr($_SERVER['SCRIPT_NAME'], 0, -10));
@@ -27,17 +33,17 @@ define('CONTROLLERS', APP . 'controllers' . DIRECTORY_SEPARATOR);
 define('MODELS', APP . 'models' . DIRECTORY_SEPARATOR);
 
 // Restore DB Dump if in development mode
-if (QuickConfig::DEVELOPMENT_MODE) {
-    QuickDB::restoreDump();
+if (\QuickMVC\Config::DEVELOPMENT_MODE) {
+    \QuickMVC\Database::restoreDump();
 }
 
 // Parse requested controller and ignore params
-$controller = QuickController::load(current(explode('&', $_SERVER['QUERY_STRING'])));
+$controller = \QuickMVC\Controller::load(current(explode('&', $_SERVER['QUERY_STRING'])));
 
 // And here goes the output magic ;)
 echo $controller->render();
 
 // If we are in developmode dump our complete db
-if (QuickConfig::DEVELOPMENT_MODE) {
-    QuickDB::storeDump();
+if (\QuickMVC\Config::DEVELOPMENT_MODE) {
+    \QuickMVC\Database::storeDump();
 }

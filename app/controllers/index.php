@@ -3,7 +3,7 @@
 /**
  * Fallback controller if nothing is found
  */
-class IndexController extends QuickController
+class IndexController extends \QuickMVC\Controller
 {
     public function _index($what = "Fallback") {
         $this->something = $what;

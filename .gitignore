@@ -1,2 +1,2 @@
 .idea*
-lib/QuickConfig.php
+config/QuickConfig.php

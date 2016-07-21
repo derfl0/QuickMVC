@@ -1,9 +1,10 @@
 <?php
+namespace QuickMVC;
 
 /**
  * QuickController
  */
-class QuickController
+class Controller
 {
     private static $redirect = array();
 
@@ -71,8 +72,8 @@ class QuickController
                  * Hint: if you want to exchange information with the new controller (or change the template) use
                  * global variables ($_GLOBAL['template'] = &this->template())
                  */
-            } catch (QuickRedirect $e) {
-                $controller = QuickController::load(end(QuickController::$redirect));
+            } catch (Redirect $e) {
+                $controller = Controller::load(end(Controller::$redirect));
                 $this->_response = $controller->render();
             }
 
@@ -125,28 +126,28 @@ class QuickController
     }
 
     public function setTemplate($template) {
-        $this->_template = new QuickTemplate($template);
+        $this->_template = new Template($template);
     }
 
     public static function redirect($path = '')
     {
         ob_end_clean();
-        header('Location: ' . QuickURL::generate($path));
+        header('Location: ' . URL::generate($path));
     }
 
     public static function redirectPost($path = '')
     {
 
         // To many redirects check
-        if (count(self::$redirect) > QuickConfig::REDIRECT_MAX) {
-            throw new QuickRedirectException('Too many redirects');
+        if (count(self::$redirect) > Config::REDIRECT_MAX) {
+            throw new RedirectException('Too many redirects');
         }
 
         // Place path into redirect stack
         self::$redirect[] = $path;
 
         // Exit rendering
-        throw new QuickRedirect;
+        throw new Redirect;
     }
 
     public function __toString() {

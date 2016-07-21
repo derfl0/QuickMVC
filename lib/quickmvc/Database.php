@@ -1,20 +1,23 @@
 <?php
+namespace QuickMVC;
 
 /**
- * QuickDB
+ * Database
+ *
+ * Access to your mysql Database
  */
-class QuickDB extends PDO
+class Database extends \PDO
 {
     private static $instance;
 
     public static function get()
     {
         if (!self::$instance) {
-            self::$instance = new self('mysql:host=' . QuickConfig::DB_HOST
-                . ';dbname=' . QuickConfig::DB_NAME
+            self::$instance = new self('mysql:host=' . Config::DB_HOST
+                . ';dbname=' . Config::DB_NAME
                 . ';charset=utf8',
-                QuickConfig::DB_USER,
-                QuickConfig::DB_PASSWORD);
+                Config::DB_USER,
+                Config::DB_PASSWORD);
             if (DEV) {
                 self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }

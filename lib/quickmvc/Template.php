@@ -1,6 +1,8 @@
 <?php
 
-class QuickTemplate
+namespace QuickMVC;
+
+class Template
 {
     private $template;
     private $scripts = array();

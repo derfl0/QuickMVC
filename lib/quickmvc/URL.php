@@ -1,6 +1,8 @@
 <?php
 
-class QuickURL
+namespace QuickMVC;
+
+class URL
 {
     function __construct($link)
     {

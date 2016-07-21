@@ -1,5 +1,7 @@
 <?php
 
+namespace QuickMVC;
+
 /**
  * Class QuickORM
  *
@@ -13,7 +15,7 @@
  *
  * Enough to get all the features of the ORM
  */
-class QuickORM
+class ORM
 {
     /**
      * @var Meta information of tables

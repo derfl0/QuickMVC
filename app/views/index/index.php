@@ -1,2 +1,2 @@
 <p></p>Hello <?= $something ?></p>
-<a href="<?= QuickURL::generate('redirectme') ?>">Redirect me through controllers</a>
+<a href="<?= \QuickMVC\URL::generate('redirectme') ?>">Redirect me through controllers</a>

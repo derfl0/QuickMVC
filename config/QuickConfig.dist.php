@@ -1,6 +1,7 @@
 <?php
+namespace QuickMVC;
 
-class QuickConfig
+class Config
 {
     // Set mode to development
     const DEVELOPMENT_MODE = true;

@@ -1,6 +1,7 @@
 <?php
+namespace QuickMVC;
 
-class QuickAutoloader
+class Autoloader
 {
     private static $paths = array();
     private static $registered;
@@ -25,7 +26,7 @@ class QuickAutoloader
      */
     private static function register()
     {
-        spl_autoload_register('QuickAutoloader::load');
+        spl_autoload_register('\QuickMVC\Autoloader::load');
     }
 
     /**
@@ -33,13 +34,17 @@ class QuickAutoloader
      * @param $class Classname
      */
     public static function load($class) {
+
+        // Namespace escape
+        $class = str_replace('\\', DIRECTORY_SEPARATOR, $class);
+
         foreach (self::$paths as $path) {
-            if (file_exists($path . '/' . $class . '.php')) {
-                require $path . '/' . $class . '.php';
+            if (file_exists($path . DIRECTORY_SEPARATOR . $class . '.php')) {
+                require $path . DIRECTORY_SEPARATOR . $class . '.php';
                 return;
             }
-            if (file_exists($path . '/' . $class . '.class.php')) {
-                require $path . '/' . $class . '.class.php';
+            if (file_exists($path . DIRECTORY_SEPARATOR . $class . '.class.php')) {
+                require $path . DIRECTORY_SEPARATOR . $class . '.class.php';
                 return;
             }
         }
