@@ -7,19 +7,12 @@ Options -Indexes
 	# Rewrite base which shouldnt be required
 	#RewriteBase /QuickMVC
 
-	# Force to exclude the trailing slash
-	#RewriteCond %{REQUEST_FILENAME} !-d
-	#RewriteCond %{REQUEST_URI} (.*)/$
-	#RewriteRule ^(.+)/$ $1 [R=307,L]
+	# Allow access only to the public folder and redirect all requests there
+	RewriteCond %{REQUEST_URI} !public
+	RewriteRule (.*) public/$1 [QSA]
 
-	# Restrict php files direct access
-	RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
-	RewriteRule \.php$ - [F]
-
-	# Allow any files or directories that exist to be displayed directly
+    # If nothing was found in the public folder redirect to the index
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-
 	RewriteRule ^(.*)$ index.php?$1 [QSA,L]
 
 </IfModule>
