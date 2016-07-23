@@ -2,7 +2,7 @@
 
 namespace QuickMVC;
 
-class RedirectException extends Exception
+class RedirectException extends \Exception
 {
 
 }
