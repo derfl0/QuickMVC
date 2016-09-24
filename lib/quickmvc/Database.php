@@ -18,8 +18,8 @@ class Database extends \PDO
                 . ';charset=utf8',
                 Config::DB_USER,
                 Config::DB_PASSWORD);
-            if (DEV) {
-                self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if (Config::DEVELOPMENT_MODE) {
+                self::$instance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             }
         }
         return self::$instance;

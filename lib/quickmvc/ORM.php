@@ -41,7 +41,7 @@ class ORM
     protected static function getDB()
     {
         if (!isset(self::$db)) {
-            self::$db = QuickDB::get();
+            self::$db = Database::get();
         }
         return self::$db;
     }
