@@ -154,7 +154,7 @@ class ORM
             $params = array($params);
         }
 
-        $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
+        $stmt = Database::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, get_called_class());
         static::$storage[static::class] = $stmt;
