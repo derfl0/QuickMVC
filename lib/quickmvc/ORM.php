@@ -156,7 +156,7 @@ class ORM
 
         $stmt = QuickDB::get()->prepare("SELECT * FROM " . static::DB_TABLE . " WHERE $where");
         $stmt->execute($params);
-        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, get_called_class());
         static::$storage[static::class] = $stmt;
         return $stmt;
     }
@@ -273,7 +273,7 @@ class ORM
         if (!static::$meta[static::class]) {
             $stmt = self::getDB()->prepare("SHOW COLUMNS FROM " . static::DB_TABLE);
             $stmt->execute();
-            static::$meta[static::class] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            static::$meta[static::class] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
         return static::$meta[static::class];
     }
