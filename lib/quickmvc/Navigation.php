@@ -38,7 +38,7 @@ class Navigation
 
     public function addRoute($route, $text, $name = null)
     {
-        $this->add(QuickURL::generate($route), $text, $name);
+        $this->add(\QuickMVC\URL::generate($route), $text, $name);
     }
 
     public function render()
