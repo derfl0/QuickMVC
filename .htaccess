@@ -9,10 +9,11 @@ Options -Indexes
 
 	# Allow access only to the public folder and redirect all requests there
 	RewriteCond %{REQUEST_URI} !public
-	RewriteRule (.*) public/$1 [QSA]
-
-    # If nothing was found in the public folder redirect to the index
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*)$ index.php?$1 [QSA,L]
+	RewriteRule ^(.*)$ public/$1 [L]
+
+  # If nothing was found in the public folder redirect to the index
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^public/(.*)$ index.php?_quickmvc[route]=$1 [QSA,L]
 
 </IfModule>

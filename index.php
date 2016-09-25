@@ -38,7 +38,7 @@ if (\QuickMVC\Config::DEVELOPMENT_MODE) {
 }
 
 // Parse requested controller and ignore params
-$controller = \QuickMVC\Controller::load(current(explode('&', $_SERVER['QUERY_STRING'])));
+$controller = \QuickMVC\Controller::load($_REQUEST['_quickmvc']['route']);
 
 // And here goes the output magic ;)
 echo $controller->render();

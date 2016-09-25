@@ -79,7 +79,7 @@ class Database extends \PDO
 
             // Values
             $val = $this->query("SELECT * FROM `$table`");
-            $dump[$table]['values'] = $val->fetchAll(PDO::FETCH_NUM);
+            $dump[$table]['values'] = $val->fetchAll(\PDO::FETCH_NUM);
         }
         return $dump;
     }
