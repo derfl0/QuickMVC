@@ -7,9 +7,9 @@ class Config
     const DEVELOPMENT_MODE = true;
     
     const DB_HOST = 'localhost';
-    const DB_NAME = 'sanube';
-    const DB_USER = 'sanube';
-    const DB_PASSWORD = 'sanube1';
+    const DB_NAME = 'databasename';
+    const DB_USER = 'username';
+    const DB_PASSWORD = 'password';
 
     const REDIRECT_MAX = 10;
 }
