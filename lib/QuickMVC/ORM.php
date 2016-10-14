@@ -272,7 +272,7 @@ class ORM
         // If meta for this table was not already loaded, load it now
         if (!static::$meta[static::class]) {
             $stmt = self::getDB()->prepare("SHOW COLUMNS FROM " . static::DB_TABLE);
-            $stmt->execute();
+            self::execute($stmt);
             static::$meta[static::class] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
         return static::$meta[static::class];
@@ -306,5 +306,27 @@ class ORM
             $sql[] = " $pk = ? ";
         }
         return join(' AND ', $sql);
+    }
+
+    private static function execute($stmt, $params = array()) {
+        try {
+            $stmt->execute($params);
+        } catch (\PDOException $e) {
+            static::install();
+            $stmt->execute($params);
+        }
+    }
+
+    private static function install() {
+        $db = self::getDB();
+        $reflect = new \ReflectionClass(get_called_class());
+
+        // Install db table
+        $db->query("CREATE TABLE IF NOT EXISTS ".self::DB_TABLE);
+
+        // Install properties
+        foreach ($reflect->getProperties() as $prop) {
+            $doc = $prop->getDocComment();
+        }
     }
 }

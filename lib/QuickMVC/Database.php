@@ -8,16 +8,22 @@ namespace QuickMVC;
  */
 class Database extends \PDO
 {
-    private static $instance;
+    protected static $instance;
 
     public static function get()
     {
         if (!self::$instance) {
-            self::$instance = new self('mysql:host=' . Config::DB_HOST
-                . ';dbname=' . Config::DB_NAME
-                . ';charset=utf8',
-                Config::DB_USER,
-                Config::DB_PASSWORD);
+
+            if (Config::DB_SQLITE) {
+                self::$instance = new self('sqlite:'. Config::DB_SQLITE);
+            } else {
+                self::$instance = new self('mysql:host=' . Config::DB_HOST
+                    . ';dbname=' . Config::DB_NAME
+                    . ';charset=utf8',
+                    Config::DB_USER,
+                    Config::DB_PASSWORD);
+            }
+
             if (Config::DEVELOPMENT_MODE) {
                 self::$instance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             }
@@ -42,7 +48,8 @@ class Database extends \PDO
         fwrite($dumpfile, ';');
     }
 
-    public static function restoreDump($dumpname = "QuickDBDump.php") {
+    public static function restoreDump($dumpname = "QuickDBDump.php")
+    {
 
         if (file_exists($dumpname)) {
             $db = self::get();
