@@ -1,4 +1,13 @@
 <?php
+
+// Define constants
+define('URL', substr($_SERVER['SCRIPT_NAME'], 0, -10));
+define('PATH', __DIR__);
+define('APP', PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR);
+define('VIEWS', APP . 'views' . DIRECTORY_SEPARATOR);
+define('CONTROLLERS', APP . 'controllers' . DIRECTORY_SEPARATOR);
+define('MODELS', APP . 'models' . DIRECTORY_SEPARATOR);
+
 /**
  * ###INSTALL###
  *
@@ -23,19 +32,6 @@ session_start();
 // Prepare autoloader
 \QuickMVC\Autoloader::addPath('lib');
 \QuickMVC\Autoloader::addPath('app/models');
-
-// Define constants
-define('URL', substr($_SERVER['SCRIPT_NAME'], 0, -10));
-define('PATH', __DIR__);
-define('APP', PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR);
-define('VIEWS', APP . 'views' . DIRECTORY_SEPARATOR);
-define('CONTROLLERS', APP . 'controllers' . DIRECTORY_SEPARATOR);
-define('MODELS', APP . 'models' . DIRECTORY_SEPARATOR);
-
-// Restore DB Dump if in development mode
-if (\QuickMVC\Config::DEVELOPMENT_MODE) {
-    \QuickMVC\Database::restoreDump();
-}
 
 // Parse requested controller and ignore params
 $controller = \QuickMVC\Controller::load($_REQUEST['_quickmvc']['route']);
