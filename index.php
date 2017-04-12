@@ -32,10 +32,7 @@ define('VIEWS', APP . 'views' . DIRECTORY_SEPARATOR);
 define('CONTROLLERS', APP . 'controllers' . DIRECTORY_SEPARATOR);
 define('MODELS', APP . 'models' . DIRECTORY_SEPARATOR);
 
-// Restore DB Dump if in development mode
-if (\QuickMVC\Config::DEVELOPMENT_MODE) {
-    \QuickMVC\Database::restoreDump();
-}
+\QuickMVC\Migrator::migrate();
 
 // Parse requested controller and ignore params
 $controller = \QuickMVC\Controller::load($_REQUEST['_quickmvc']['route']);
@@ -43,7 +40,3 @@ $controller = \QuickMVC\Controller::load($_REQUEST['_quickmvc']['route']);
 // And here goes the output magic ;)
 echo $controller->render();
 
-// If we are in developmode dump our complete db
-if (\QuickMVC\Config::DEVELOPMENT_MODE) {
-    \QuickMVC\Database::storeDump();
-}
