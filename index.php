@@ -7,7 +7,7 @@
 require "config/QuickConfig.php";
 
 // Load autoloader
-require 'lib'.DIRECTORY_SEPARATOR.'quickmvc'.DIRECTORY_SEPARATOR.'Autoloader.php';
+require 'lib'.DIRECTORY_SEPARATOR.'QuickMVC'.DIRECTORY_SEPARATOR.'Autoloader.php';
 
 // Set error mode
 if (\QuickMVC\Config::DEVELOPMENT_MODE) {
