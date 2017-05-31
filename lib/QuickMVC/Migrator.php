@@ -69,7 +69,9 @@ class Migrator
     }
 
     private static function getGlob() {
-        return array_reverse(glob(self::getPath().DIRECTORY_SEPARATOR."*.php"));
+        $arr = glob(self::getPath().DIRECTORY_SEPARATOR."*.php");
+        sort($arr);
+        return $arr;
     }
 
     private static function increaseVersion() {
